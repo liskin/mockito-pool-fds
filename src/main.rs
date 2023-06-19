@@ -12,6 +12,8 @@ fn main() {
 
     // maybe some fds will get closed? probably not.
     thread::sleep(Duration::from_secs(5));
+
+    log_open_fd_count();
 }
 
 // workaround for panic messages from different threads getting mixed together
@@ -23,4 +25,9 @@ fn delay_main_panic() {
         }
         def_panic_hook(info)
     }));
+}
+
+fn log_open_fd_count() {
+    let num_fds = std::fs::read_dir("/dev/fd").unwrap().count();
+    println!("Number of open fds: {}", num_fds);
 }
