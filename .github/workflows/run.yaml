@@ -5,9 +5,19 @@ on:
 
 jobs:
   run:
-    runs-on: macos-13
+    strategy:
+      matrix:
+        os: [macos-12, macos-13, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - run: |
-          ulimit -a
-          cargo run
+      - run: ulimit -Sa
+      - run: ulimit -Ha
+      - run: ulimit -Sa
+        shell: bash
+      - run: ulimit -Ha
+        shell: bash
+      - run: launchctl limit || true
+      - run: sudo launchctl limit || true
+      - run: sudo sysctl -a | grep ^kern.max || true
+      - run: cargo run
